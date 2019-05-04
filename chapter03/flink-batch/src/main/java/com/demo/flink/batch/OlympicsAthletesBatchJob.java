@@ -4,10 +4,11 @@ package com.demo.flink.batch;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.java.operators.IterativeDataSet;
 import org.apache.flink.api.java.tuple.Tuple2;
 
 import org.apache.flink.util.Collector;
-
+import org.apache.log4j.Logger;
 /**
  * Implements the Oylympics Athletes program that gives insights about games played and medals won. 
  * 
@@ -23,41 +24,36 @@ import org.apache.flink.util.Collector;
  */
 public class OlympicsAthletesBatchJob {
 
-	
-	public static void main(String[] args) throws Exception {
+	private static Logger logger = Logger.getLogger(OlympicsAthletesBatchJob.class);
+	public static void main(String[] args) throws Exception{
 
 		// set up the execution environment
 		final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-		DataSet<Record> csvInput = env.readCsvFile("olympic-athletes.csv")
+		DataSet<Record> csvInput = env.readCsvFile("/root/flink-1.8.0/flink-web-upload/olympic-athletes.csv")
 				.pojoType(Record.class, "playerName", "country", "year", "game", "gold", "silver", "bronze", "total");
-
 		DataSet<Tuple2<String, Integer>> groupedByCountry = csvInput
 				.flatMap(new FlatMapFunction<Record, Tuple2<String, Integer>>() {
-
-					private static final long serialVersionUID = 1L;
-
 					@Override
-					public void flatMap(Record record, Collector<Tuple2<String, Integer>> out) throws Exception {
-
-						out.collect(new Tuple2<String, Integer>(record.getCountry(), 1));
+					public void flatMap(Record record, Collector<Tuple2<String, Integer>> out){
+						out.collect(new Tuple2<>(record.getCountry(), 1));
 					}
 				}).groupBy(0).sum(1);
-		groupedByCountry.print();
+		groupedByCountry.writeAsCsv("/root/flink-1.8.0/flink-web-upload/result.csv", "\n", " ");
+
 
 		DataSet<Tuple2<String, Integer>> groupedByGame = csvInput
 				.flatMap(new FlatMapFunction<Record, Tuple2<String, Integer>>() {
-
-					private static final long serialVersionUID = 1L;
-
 					@Override
-					public void flatMap(Record record, Collector<Tuple2<String, Integer>> out) throws Exception {
+					public void flatMap(Record record, Collector<Tuple2<String, Integer>> out){
 
-						out.collect(new Tuple2<String, Integer>(record.getGame(), 1));
+						out.collect(new Tuple2<>(record.getGame(), 1));
 					}
 				}).groupBy(0).sum(1);
-		groupedByGame.print();
-
+        groupedByGame.writeAsCsv("/root/flink-1.8.0/flink-web-upload/result1.csv", "\n", " ");
+        env.execute("BATCH CSV Example");
 	}
 
 }
+
+
