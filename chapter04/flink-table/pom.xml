@@ -22,25 +22,37 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<flink.version>1.1.4</flink.version>
+		<flink.version>1.8.0</flink.version>
 		<slf4j.version>1.7.7</slf4j.version>
 		<log4j.version>1.2.17</log4j.version>
 	</properties>
 
+<!--	<repositories>-->
+<!--		<repository>-->
+<!--			<id>apache.snapshots</id>-->
+<!--			<name>Apache Development Snapshot Repository</name>-->
+<!--			<url>https://repository.apache.org/content/repositories/snapshots/</url>-->
+<!--			<releases>-->
+<!--				<enabled>false</enabled>-->
+<!--			</releases>-->
+<!--			<snapshots>-->
+<!--				<enabled>true</enabled>-->
+<!--			</snapshots>-->
+<!--		</repository>-->
+<!--	</repositories>-->
 	<repositories>
 		<repository>
-			<id>apache.snapshots</id>
-			<name>Apache Development Snapshot Repository</name>
-			<url>https://repository.apache.org/content/repositories/snapshots/</url>
+			<id>alimaven</id>
+			<name>aliyun maven</name>
+			<url>http://maven.aliyun.com/nexus/content/groups/public/</url>
 			<releases>
-				<enabled>false</enabled>
+				<enabled>true</enabled>
 			</releases>
 			<snapshots>
-				<enabled>true</enabled>
+				<enabled>false</enabled>
 			</snapshots>
 		</repository>
 	</repositories>
-
 	<!-- Execute "mvn clean package -Pbuild-jar" to build a jar file out of 
 		this project! How to use the Flink Quickstart pom: a) Adding new dependencies: 
 		You can add dependencies to the list below. Please check if the maven-shade-plugin 
@@ -70,14 +82,16 @@
 			<artifactId>flink-clients_2.11</artifactId>
 			<version>${flink.version}</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.flink/flink-table_2.11 -->
 		<dependency>
 			<groupId>org.apache.flink</groupId>
-			<artifactId>flink-table_2.11</artifactId>
+			<artifactId>flink-table-api-java-bridge_2.11</artifactId>
 			<version>${flink.version}</version>
 		</dependency>
-
-
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-table-planner_2.11</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
 		<!-- explicitly add a standard loggin framework, as Flink does not (in 
 			the future) have a hard dependency on one specific framework by default -->
 		<dependency>
@@ -105,33 +119,45 @@
 			<dependencies>
 				<dependency>
 					<groupId>org.apache.flink</groupId>
+					<artifactId>flink-table-api-java-bridge_2.11</artifactId>
+					<version>${flink.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.apache.flink</groupId>
+					<artifactId>flink-table-planner_2.11</artifactId>
+					<version>${flink.version}</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.apache.flink</groupId>
 					<artifactId>flink-java</artifactId>
 					<version>${flink.version}</version>
-					<scope>provided</scope>
+					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>org.apache.flink</groupId>
 					<artifactId>flink-streaming-java_2.11</artifactId>
 					<version>${flink.version}</version>
-					<scope>provided</scope>
+					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>org.apache.flink</groupId>
 					<artifactId>flink-clients_2.11</artifactId>
 					<version>${flink.version}</version>
-					<scope>provided</scope>
+					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-log4j12</artifactId>
 					<version>${slf4j.version}</version>
-					<scope>provided</scope>
+					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>log4j</groupId>
 					<artifactId>log4j</artifactId>
 					<version>${log4j.version}</version>
-					<scope>provided</scope>
+					<scope>compile</scope>
 				</dependency>
 			</dependencies>
 
@@ -180,6 +206,10 @@
 						</goals>
 						<configuration>
 							<artifactSet>
+								<includes>
+									<include>org.apache.flink:flink-table-api-java-bridge_2.11</include>
+									<include>org.apache.flink:flink-table-planner_2.11</include>
+								</includes>
 								<excludes>
 									<!-- This list contains all dependencies of flink-dist Everything 
 										else will be packaged into the fat-jar -->

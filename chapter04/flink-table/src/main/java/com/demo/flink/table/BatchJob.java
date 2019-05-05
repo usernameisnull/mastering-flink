@@ -2,25 +2,24 @@ package com.demo.flink.table;
 
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.api.java.table.BatchTableEnvironment;
-import org.apache.flink.api.table.Table;
-import org.apache.flink.api.table.TableEnvironment;
+import org.apache.flink.table.api.Table;
+import org.apache.flink.table.api.java.BatchTableEnvironment;
 
 public class BatchJob {
 
 	public static void main(String[] args) throws Exception {
 		ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
-		BatchTableEnvironment tableEnv = TableEnvironment.getTableEnvironment(env);
-
+//		BatchTableEnvironment tableEnv = BatchTableEnvironment.getTableEnvironment(env);
+		BatchTableEnvironment tableEnv = BatchTableEnvironment.create(env);
 		DataSet<Record> csvInput = env
-				.readCsvFile("D://NOTBACKEDUP//dataflow//flink-table//src//main//resources//data//olympic-athletes.csv")
+				.readCsvFile("/sdb1/flink-1.8.0/flink-web-upload/olympic-athletes.csv")
 				.pojoType(Record.class, "playerName", "country", "year", "game", "gold", "silver", "bronze", "total");
 		// register the DataSet athletes as table "athletes" with fields derived
 		// from the dataset
 		Table atheltes = tableEnv.fromDataSet(csvInput);
 		tableEnv.registerTable("athletes", atheltes);
 		// run a SQL query on the Table and retrieve the result as a new Table
-		Table groupedByCountry = tableEnv.sql("SELECT country, SUM(total) as frequency FROM athletes group by country");
+		Table groupedByCountry = tableEnv.sqlQuery("SELECT country, SUM(total) as frequency FROM athletes group by country");
 
 		DataSet<Result> result = tableEnv.toDataSet(groupedByCountry, Result.class);
 
