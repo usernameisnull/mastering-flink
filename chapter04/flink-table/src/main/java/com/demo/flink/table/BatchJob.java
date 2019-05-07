@@ -8,6 +8,7 @@ import org.apache.flink.table.api.java.BatchTableEnvironment;
 public class BatchJob {
 
 	public static void main(String[] args) throws Exception {
+		System.out.println("===============================");
 		ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 //		BatchTableEnvironment tableEnv = BatchTableEnvironment.getTableEnvironment(env);
 		BatchTableEnvironment tableEnv = BatchTableEnvironment.create(env);
@@ -22,15 +23,13 @@ public class BatchJob {
 		Table groupedByCountry = tableEnv.sqlQuery("SELECT country, SUM(total) as frequency FROM athletes group by country");
 
 		DataSet<Result> result = tableEnv.toDataSet(groupedByCountry, Result.class);
-
+//		DataSet<Result> result = tableEnv.toAppendStream(groupedByCountry, Result.class);
 		result.print();
-
 		Table groupedByGame = atheltes.groupBy("game").select("game, total.sum as frequency");
 
 		DataSet<GameResult> gameResult = tableEnv.toDataSet(groupedByGame, GameResult.class);
 
 		gameResult.print();
-
 	}
 
 	public static class Result {

@@ -1,2 +1,6 @@
 kafka-go-producer
 .idea/
+classes/
+*.iml
+*/META-INF/*
+target/
