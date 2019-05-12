@@ -20,7 +20,7 @@ func init(){
 	saramaConfig.Producer.RequiredAcks = sarama.WaitForAll
 	saramaConfig.Producer.Retry.Max = 5
 	saramaConfig.Producer.Return.Successes = true
-	brokers, topics = []string{"192.168.11.145:9092"},"test"
+	brokers, topics = []string{"192.168.11.145:9092"},"temp"
 	var err error
 	producer, err = sarama.NewSyncProducer(brokers, saramaConfig)
 	if err != nil {

@@ -9,7 +9,7 @@ import "math/rand"
 func main(){
 	for{
 		stamp := time.Now().Unix()
-		Producer(fmt.Sprintf("%d, %.2f, %d", stamp,generateTemperature(),generateSensorId()))
+		Producer(fmt.Sprintf("%d,%.2f,'%d'", stamp*1000,generateTemperature(),generateSensorId()))
 		time.Sleep(time.Second*1)
 	}
 }
